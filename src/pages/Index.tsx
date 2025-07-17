@@ -12,12 +12,15 @@ import {
   Briefcase,
   UserCheck,
   TrendingUp,
-  Award
+  Award,
+  LogOut
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import eventaJobLogo from "@/assets/eventajob-logo.png";
 
 const Index = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     setIsVisible(true);
@@ -40,9 +43,20 @@ const Index = () => {
             <Button variant="ghost" className="text-sm">
               Para Profissionais
             </Button>
-            <Button className="btn-primary text-sm">
-              Entrar
-            </Button>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-muted-foreground">
+                Olá, {user?.email}
+              </span>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={signOut}
+                className="text-sm"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Sair
+              </Button>
+            </div>
           </div>
         </div>
       </header>

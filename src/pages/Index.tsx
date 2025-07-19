@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +14,8 @@ import {
   UserCheck,
   TrendingUp,
   Award,
-  LogOut
+  LogOut,
+  User
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import eventaJobLogo from "@/assets/eventajob-logo.png";
@@ -47,6 +49,17 @@ const Index = () => {
               <span className="text-sm text-muted-foreground">
                 Olá, {user?.email}
               </span>
+              <Button 
+                variant="outline" 
+                size="sm"
+                asChild
+                className="text-sm"
+              >
+                <Link to="/profile">
+                  <User className="mr-2 h-4 w-4" />
+                  Perfil
+                </Link>
+              </Button>
               <Button 
                 variant="outline" 
                 size="sm"

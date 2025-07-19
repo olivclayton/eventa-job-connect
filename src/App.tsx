@@ -3,10 +3,13 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
+import AppSidebar from "./components/AppSidebar";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,7 +41,26 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
   
-  return user ? <Navigate to="/" replace /> : <>{children}</>;
+  return user ? <Navigate to="/dashboard" replace /> : <>{children}</>;
+};
+
+// Layout com sidebar para páginas autenticadas
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <header className="h-12 flex items-center border-b bg-background">
+            <SidebarTrigger className="ml-2" />
+          </header>
+          <main className="flex-1 overflow-auto">
+            {children}
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
 };
 
 const App = () => (
@@ -49,14 +71,13 @@ const App = () => (
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            {/* Rota pública - landing page */}
             <Route 
               path="/" 
-              element={
-                <ProtectedRoute>
-                  <Index />
-                </ProtectedRoute>
-              } 
+              element={<Index />}
             />
+            
+            {/* Rota de autenticação */}
             <Route 
               path="/auth" 
               element={
@@ -65,14 +86,129 @@ const App = () => (
                 </PublicRoute>
               } 
             />
+            
+            {/* Rotas protegidas com layout de dashboard */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <Dashboard />
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+            
             <Route 
               path="/profile" 
               element={
                 <ProtectedRoute>
-                  <Profile />
+                  <DashboardLayout>
+                    <Profile />
+                  </DashboardLayout>
                 </ProtectedRoute>
               } 
             />
+
+            {/* Rotas futuras do dashboard */}
+            <Route 
+              path="/events" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <div className="p-6">
+                      <h1 className="text-2xl font-bold">Eventos</h1>
+                      <p className="text-muted-foreground">Gerencie seus eventos aqui.</p>
+                    </div>
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/professionals" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <div className="p-6">
+                      <h1 className="text-2xl font-bold">Profissionais</h1>
+                      <p className="text-muted-foreground">Encontre e gerencie profissionais.</p>
+                    </div>
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/jobs" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <div className="p-6">
+                      <h1 className="text-2xl font-bold">Minhas Vagas</h1>
+                      <p className="text-muted-foreground">Gerencie suas vagas de emprego.</p>
+                    </div>
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/reviews" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <div className="p-6">
+                      <h1 className="text-2xl font-bold">Avaliações</h1>
+                      <p className="text-muted-foreground">Veja avaliações e feedback.</p>
+                    </div>
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/notifications" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <div className="p-6">
+                      <h1 className="text-2xl font-bold">Notificações</h1>
+                      <p className="text-muted-foreground">Gerencie suas notificações.</p>
+                    </div>
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/reports" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <div className="p-6">
+                      <h1 className="text-2xl font-bold">Relatórios</h1>
+                      <p className="text-muted-foreground">Visualize relatórios e análises.</p>
+                    </div>
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/settings" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <div className="p-6">
+                      <h1 className="text-2xl font-bold">Configurações</h1>
+                      <p className="text-muted-foreground">Configure sua conta e preferências.</p>
+                    </div>
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

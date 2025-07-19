@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +28,11 @@ const Index = () => {
     setIsVisible(true);
   }, []);
 
+  // Se usuário estiver logado, redirecionar para dashboard
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header/Navigation */}
@@ -45,31 +50,11 @@ const Index = () => {
             <Button variant="ghost" className="text-sm">
               Para Profissionais
             </Button>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-muted-foreground">
-                Olá, {user?.email}
-              </span>
-              <Button 
-                variant="outline" 
-                size="sm"
-                asChild
-                className="text-sm"
-              >
-                <Link to="/profile">
-                  <User className="mr-2 h-4 w-4" />
-                  Perfil
-                </Link>
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={signOut}
-                className="text-sm"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Sair
-              </Button>
-            </div>
+            <Button asChild className="text-sm">
+              <Link to="/auth">
+                Entrar / Registrar
+              </Link>
+            </Button>
           </div>
         </div>
       </header>

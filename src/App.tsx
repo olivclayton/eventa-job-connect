@@ -10,6 +10,9 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
+import Events from "./pages/Events";
+import CreateEvent from "./pages/CreateEvent";
+import EditEvent from "./pages/EditEvent";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -110,16 +113,35 @@ const App = () => (
               } 
             />
 
-            {/* Rotas futuras do dashboard */}
+            {/* Rotas de eventos */}
             <Route 
               path="/events" 
               element={
                 <ProtectedRoute>
                   <DashboardLayout>
-                    <div className="p-6">
-                      <h1 className="text-2xl font-bold">Eventos</h1>
-                      <p className="text-muted-foreground">Gerencie seus eventos aqui.</p>
-                    </div>
+                    <Events />
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/events/create" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <CreateEvent />
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/events/edit/:id" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <EditEvent />
                   </DashboardLayout>
                 </ProtectedRoute>
               } 

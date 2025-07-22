@@ -71,6 +71,129 @@ export type Database = {
         }
         Relationships: []
       }
+      professional_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          event_id: string | null
+          id: string
+          professional_id: string
+          rating: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          professional_id: string
+          rating: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          professional_id?: string
+          rating?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_reviews_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_reviews_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professionals: {
+        Row: {
+          availability_days: string[] | null
+          bio: string | null
+          category: string
+          created_at: string
+          email: string
+          id: string
+          instagram_url: string | null
+          is_active: boolean | null
+          is_verified: boolean | null
+          location: string
+          max_price: number | null
+          min_price: number | null
+          name: string
+          phone: string | null
+          portfolio_images: string[] | null
+          price_range: string | null
+          rating: number | null
+          specialties: string[] | null
+          total_reviews: number | null
+          updated_at: string
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          availability_days?: string[] | null
+          bio?: string | null
+          category: string
+          created_at?: string
+          email: string
+          id?: string
+          instagram_url?: string | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          location: string
+          max_price?: number | null
+          min_price?: number | null
+          name: string
+          phone?: string | null
+          portfolio_images?: string[] | null
+          price_range?: string | null
+          rating?: number | null
+          specialties?: string[] | null
+          total_reviews?: number | null
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          availability_days?: string[] | null
+          bio?: string | null
+          category?: string
+          created_at?: string
+          email?: string
+          id?: string
+          instagram_url?: string | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          location?: string
+          max_price?: number | null
+          min_price?: number | null
+          name?: string
+          phone?: string | null
+          portfolio_images?: string[] | null
+          price_range?: string | null
+          rating?: number | null
+          specialties?: string[] | null
+          total_reviews?: number | null
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

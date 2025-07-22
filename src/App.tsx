@@ -14,6 +14,9 @@ import Dashboard from "./pages/Dashboard";
 import Events from "./pages/Events";
 import CreateEvent from "./pages/CreateEvent";
 import EditEvent from "./pages/EditEvent";
+import Professionals from "./pages/Professionals";
+import CreateProfessional from "./pages/CreateProfessional";
+import EditProfessional from "./pages/EditProfessional";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -153,10 +156,29 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DashboardLayout>
-                    <div className="p-6">
-                      <h1 className="text-2xl font-bold">Profissionais</h1>
-                      <p className="text-muted-foreground">Encontre e gerencie profissionais.</p>
-                    </div>
+                    <Professionals />
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/professionals/create" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <CreateProfessional />
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/professionals/edit/:id" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <EditProfessional />
                   </DashboardLayout>
                 </ProtectedRoute>
               } 

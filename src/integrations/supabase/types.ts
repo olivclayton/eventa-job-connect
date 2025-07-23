@@ -71,6 +71,132 @@ export type Database = {
         }
         Relationships: []
       }
+      job_applications: {
+        Row: {
+          applicant_id: string
+          applied_at: string
+          cover_letter: string | null
+          id: string
+          job_id: string
+          professional_id: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          applicant_id: string
+          applied_at?: string
+          cover_letter?: string | null
+          id?: string
+          job_id: string
+          professional_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          applicant_id?: string
+          applied_at?: string
+          cover_letter?: string | null
+          id?: string
+          job_id?: string
+          professional_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applications_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          application_deadline: string | null
+          benefits: string[] | null
+          category: string
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          current_applicants: number | null
+          description: string | null
+          employment_type: string
+          end_date: string | null
+          experience_level: string | null
+          id: string
+          is_featured: boolean | null
+          location: string
+          max_applicants: number | null
+          requirements: string[] | null
+          salary_max: number | null
+          salary_min: number | null
+          start_date: string | null
+          status: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          application_deadline?: string | null
+          benefits?: string[] | null
+          category: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          current_applicants?: number | null
+          description?: string | null
+          employment_type?: string
+          end_date?: string | null
+          experience_level?: string | null
+          id?: string
+          is_featured?: boolean | null
+          location: string
+          max_applicants?: number | null
+          requirements?: string[] | null
+          salary_max?: number | null
+          salary_min?: number | null
+          start_date?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          application_deadline?: string | null
+          benefits?: string[] | null
+          category?: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          current_applicants?: number | null
+          description?: string | null
+          employment_type?: string
+          end_date?: string | null
+          experience_level?: string | null
+          id?: string
+          is_featured?: boolean | null
+          location?: string
+          max_applicants?: number | null
+          requirements?: string[] | null
+          salary_max?: number | null
+          salary_min?: number | null
+          start_date?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       professional_reviews: {
         Row: {
           comment: string | null

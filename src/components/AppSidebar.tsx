@@ -26,7 +26,7 @@ const items = [
   { title: 'Dashboard', url: '/dashboard', icon: Home },
   { title: 'Eventos', url: '/events', icon: Calendar },
   { title: 'Profissionais', url: '/professionals', icon: Users },
-  { title: 'Minhas Vagas', url: '/jobs', icon: Briefcase },
+  { title: 'Vagas', url: '/jobs', icon: Briefcase },
   { title: 'Avaliações', url: '/reviews', icon: Star },
   { title: 'Notificações', url: '/notifications', icon: Bell },
   { title: 'Relatórios', url: '/reports', icon: TrendingUp },

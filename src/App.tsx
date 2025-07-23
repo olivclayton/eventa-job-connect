@@ -17,6 +17,9 @@ import EditEvent from "./pages/EditEvent";
 import Professionals from "./pages/Professionals";
 import CreateProfessional from "./pages/CreateProfessional";
 import EditProfessional from "./pages/EditProfessional";
+import Jobs from "./pages/Jobs";
+import CreateJob from "./pages/CreateJob";
+import EditJob from "./pages/EditJob";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -189,10 +192,29 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DashboardLayout>
-                    <div className="p-6">
-                      <h1 className="text-2xl font-bold">Minhas Vagas</h1>
-                      <p className="text-muted-foreground">Gerencie suas vagas de emprego.</p>
-                    </div>
+                    <Jobs />
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/jobs/create" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <CreateJob />
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/jobs/edit/:id" 
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <EditJob />
                   </DashboardLayout>
                 </ProtectedRoute>
               } 

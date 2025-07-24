@@ -14,9 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      event_applications: {
+        Row: {
+          applicant_id: string
+          application_type: string
+          applied_at: string
+          contact_preference: string | null
+          event_id: string
+          id: string
+          message: string | null
+          price_proposal: number | null
+          professional_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          applicant_id: string
+          application_type?: string
+          applied_at?: string
+          contact_preference?: string | null
+          event_id: string
+          id?: string
+          message?: string | null
+          price_proposal?: number | null
+          professional_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          applicant_id?: string
+          application_type?: string
+          applied_at?: string
+          contact_preference?: string | null
+          event_id?: string
+          id?: string
+          message?: string | null
+          price_proposal?: number | null
+          professional_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_applications_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_applications_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
+          application_deadline: string | null
           category: string | null
+          contact_email: string | null
+          contact_phone: string | null
           created_at: string
           current_participants: number | null
           date: string
@@ -27,6 +87,7 @@ export type Database = {
           location: string
           max_participants: number | null
           price: number | null
+          required_professionals: Json | null
           start_time: string
           status: string | null
           title: string
@@ -34,7 +95,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          application_deadline?: string | null
           category?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
           current_participants?: number | null
           date: string
@@ -45,6 +109,7 @@ export type Database = {
           location: string
           max_participants?: number | null
           price?: number | null
+          required_professionals?: Json | null
           start_time: string
           status?: string | null
           title: string
@@ -52,7 +117,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          application_deadline?: string | null
           category?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
           current_participants?: number | null
           date?: string
@@ -63,6 +131,7 @@ export type Database = {
           location?: string
           max_participants?: number | null
           price?: number | null
+          required_professionals?: Json | null
           start_time?: string
           status?: string | null
           title?: string

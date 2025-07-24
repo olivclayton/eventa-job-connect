@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Star, MapPin, Phone, Mail, Instagram, Globe, Trash2, Edit } from 'lucide-react';
+import { Plus, Search, Star, MapPin, Phone, Mail, Instagram, Globe, Trash2, Edit, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -8,6 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -30,6 +33,7 @@ interface Professional {
   rating: number;
   total_reviews: number;
   is_verified: boolean;
+  availability_days?: string[];
   user_id: string;
   created_at: string;
 }
@@ -70,6 +74,7 @@ export default function Professionals() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -135,7 +140,11 @@ export default function Professionals() {
     
     const matchesCategory = selectedCategory === 'all' || professional.category === selectedCategory;
     
-    return matchesSearch && matchesCategory;
+    // Filter by availability date if selected
+    const matchesDate = !selectedDate || (professional.availability_days && 
+      professional.availability_days.includes(format(selectedDate, 'EEEE').toLowerCase()));
+    
+    return matchesSearch && matchesCategory && matchesDate;
   });
 
   const getInitials = (name: string) => {
@@ -214,6 +223,36 @@ export default function Professionals() {
             ))}
           </SelectContent>
         </Select>
+        
+        {/* Date Filter */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-full md:w-56 justify-start text-left font-normal">
+              <Calendar className="mr-2 h-4 w-4" />
+              {selectedDate ? format(selectedDate, "dd/MM/yyyy") : "Filtrar por data"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <CalendarComponent
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              initialFocus
+            />
+            {selectedDate && (
+              <div className="p-3 border-t">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setSelectedDate(undefined)}
+                  className="w-full"
+                >
+                  Limpar filtro
+                </Button>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
       </div>
 
       {/* Results */}
@@ -345,20 +384,44 @@ export default function Professionals() {
                 <div className="flex justify-between items-center pt-2 border-t">
                   <div className="flex gap-2">
                     {professional.phone && (
-                      <Button size="sm" variant="ghost" className="p-2">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="p-2"
+                        onClick={() => window.open(`tel:${professional.phone}`)}
+                        title="Ligar"
+                      >
                         <Phone className="h-4 w-4" />
                       </Button>
                     )}
-                    <Button size="sm" variant="ghost" className="p-2">
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="p-2"
+                      onClick={() => window.open(`mailto:${professional.email}`)}
+                      title="Enviar email"
+                    >
                       <Mail className="h-4 w-4" />
                     </Button>
                     {professional.instagram_url && (
-                      <Button size="sm" variant="ghost" className="p-2">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="p-2"
+                        onClick={() => window.open(professional.instagram_url, '_blank')}
+                        title="Instagram"
+                      >
                         <Instagram className="h-4 w-4" />
                       </Button>
                     )}
                     {professional.website_url && (
-                      <Button size="sm" variant="ghost" className="p-2">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="p-2"
+                        onClick={() => window.open(professional.website_url, '_blank')}
+                        title="Website"
+                      >
                         <Globe className="h-4 w-4" />
                       </Button>
                     )}

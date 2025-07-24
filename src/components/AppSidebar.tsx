@@ -6,7 +6,7 @@ import {
   Settings, 
   Star,
   Bell,
-  TrendingUp
+  LogOut
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -21,6 +21,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { useAuth } from '@/hooks/useAuth';
 
 const items = [
   { title: 'Dashboard', url: '/dashboard', icon: Home },
@@ -29,7 +30,6 @@ const items = [
   { title: 'Vagas', url: '/jobs', icon: Briefcase },
   { title: 'Avaliações', url: '/reviews', icon: Star },
   { title: 'Notificações', url: '/notifications', icon: Bell },
-  { title: 'Relatórios', url: '/reports', icon: TrendingUp },
   { title: 'Configurações', url: '/settings', icon: Settings },
 ];
 
@@ -37,6 +37,7 @@ export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
+  const { signOut } = useAuth();
 
   const isActive = (path: string) => currentPath === path;
 
@@ -60,6 +61,25 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        
+        {/* Logout Section */}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <button 
+                    onClick={() => signOut()}
+                    className="flex items-center w-full hover:bg-muted/50 text-destructive hover:text-destructive"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sair</span>
+                  </button>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

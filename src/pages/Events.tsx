@@ -15,7 +15,11 @@ import {
   Users, 
   Edit, 
   Trash2,
-  Euro
+  Euro,
+  Phone,
+  Mail,
+  MessageCircle,
+  UserPlus
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -28,6 +32,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAuth } from '@/hooks/useAuth';
 
 interface Event {
   id: string;
@@ -45,14 +61,20 @@ interface Event {
   status: string;
   created_at: string;
   user_id: string;
+  required_professionals?: any;
+  contact_email?: string | null;
+  contact_phone?: string | null;
+  application_deadline?: string | null;
 }
 
 const Events = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [userProfessionals, setUserProfessionals] = useState<any[]>([]);
 
   const fetchEvents = async () => {
     try {
@@ -72,6 +94,63 @@ const Events = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUserProfessionals = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('professionals')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('is_active', true);
+
+      if (error) throw error;
+      setUserProfessionals(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar profissionais:', error);
+    }
+  };
+
+  const applyToEvent = async (eventId: string, professionalId: string, applicationData: any) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('event_applications')
+        .insert({
+          event_id: eventId,
+          professional_id: professionalId,
+          applicant_id: user.id,
+          message: applicationData.message,
+          application_type: applicationData.type,
+          contact_preference: applicationData.contact,
+          price_proposal: applicationData.price ? parseFloat(applicationData.price) : null,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: "Candidatura enviada com sucesso!"
+      });
+    } catch (error: any) {
+      console.error('Erro ao enviar candidatura:', error);
+      if (error.code === '23505') {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Você já se candidatou a este evento com este profissional."
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Não foi possível enviar a candidatura."
+        });
+      }
     }
   };
 
@@ -102,7 +181,8 @@ const Events = () => {
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+    fetchUserProfessionals();
+  }, [user]);
 
   const filteredEvents = events.filter(event =>
     event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -276,12 +356,185 @@ const Events = () => {
                     {event.category}
                   </Badge>
                 )}
+
+                {/* Professional Application Section - Show only if user has professionals and event is not theirs */}
+                {userProfessionals.length > 0 && event.user_id !== user?.id && (
+                  <div className="pt-3 border-t">
+                    <ApplyToEventDialog
+                      event={event}
+                      userProfessionals={userProfessionals}
+                      onApply={applyToEvent}
+                    />
+                  </div>
+                )}
+
+                {/* Contact info for event owner's events */}
+                {event.user_id === user?.id && (event.contact_phone || event.contact_email) && (
+                  <div className="pt-3 border-t space-y-2">
+                    <p className="text-sm font-medium">Informações de Contato:</p>
+                    <div className="flex gap-2">
+                      {event.contact_phone && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => window.open(`tel:${event.contact_phone}`)}
+                        >
+                          <Phone className="h-4 w-4 mr-1" />
+                          Telefone
+                        </Button>
+                      )}
+                      {event.contact_email && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => window.open(`mailto:${event.contact_email}`)}
+                        >
+                          <Mail className="h-4 w-4 mr-1" />
+                          Email
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
         </div>
       )}
     </div>
+  );
+};
+
+// Component for professional application dialog
+const ApplyToEventDialog = ({ event, userProfessionals, onApply }: {
+  event: Event;
+  userProfessionals: any[];
+  onApply: (eventId: string, professionalId: string, data: any) => void;
+}) => {
+  const [selectedProfessional, setSelectedProfessional] = useState('');
+  const [message, setMessage] = useState('');
+  const [applicationType, setApplicationType] = useState('phone');
+  const [contactPreference, setContactPreference] = useState('');
+  const [priceProposal, setPriceProposal] = useState('');
+  const [open, setOpen] = useState(false);
+
+  const handleSubmit = () => {
+    if (!selectedProfessional) return;
+
+    onApply(event.id, selectedProfessional, {
+      message,
+      type: applicationType,
+      contact: contactPreference,
+      price: priceProposal,
+    });
+
+    // Reset form
+    setSelectedProfessional('');
+    setMessage('');
+    setApplicationType('phone');
+    setContactPreference('');
+    setPriceProposal('');
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" className="w-full">
+          <UserPlus className="h-4 w-4 mr-2" />
+          Candidatar-se
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Candidatar-se ao Evento</DialogTitle>
+          <DialogDescription>
+            Envie sua candidatura para "{event.title}"
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium">Selecionar Profissional:</label>
+            <Select value={selectedProfessional} onValueChange={setSelectedProfessional}>
+              <SelectTrigger>
+                <SelectValue placeholder="Escolha um perfil profissional" />
+              </SelectTrigger>
+              <SelectContent>
+                {userProfessionals.map((prof) => (
+                  <SelectItem key={prof.id} value={prof.id}>
+                    {prof.name} - {prof.category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Tipo de Candidatura:</label>
+            <Select value={applicationType} onValueChange={setApplicationType}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="phone">
+                  <div className="flex items-center">
+                    <Phone className="h-4 w-4 mr-2" />
+                    Telefone
+                  </div>
+                </SelectItem>
+                <SelectItem value="chat">
+                  <div className="flex items-center">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Chat/WhatsApp
+                  </div>
+                </SelectItem>
+                <SelectItem value="email">
+                  <div className="flex items-center">
+                    <Mail className="h-4 w-4 mr-2" />
+                    Email
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Mensagem (opcional):</label>
+            <Textarea
+              placeholder="Descreva sua experiência e por que é ideal para este evento..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Proposta de Preço (€) (opcional):</label>
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ex: 500.00"
+              value={priceProposal}
+              onChange={(e) => setPriceProposal(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancelar
+          </Button>
+          <Button 
+            onClick={handleSubmit}
+            disabled={!selectedProfessional}
+          >
+            Enviar Candidatura
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, Calendar } from 'lucide-react';
 
 const eventSchema = z.object({
@@ -38,6 +39,10 @@ const eventSchema = z.object({
   max_participants: z.string().optional(),
   price: z.string().optional(),
   image_url: z.string().optional(),
+  contact_email: z.string().email().optional().or(z.literal('')),
+  contact_phone: z.string().optional(),
+  application_deadline: z.string().optional(),
+  required_professionals: z.array(z.string()).optional(),
 });
 
 type EventFormData = z.infer<typeof eventSchema>;
@@ -55,11 +60,26 @@ const categories = [
   'Outro'
 ];
 
+const professionalCategories = [
+  'fotografo',
+  'videomaker', 
+  'dj',
+  'decorador',
+  'buffet',
+  'musico',
+  'cerimonialista',
+  'florista',
+  'maquiador',
+  'seguranca',
+  'outros'
+];
+
 const CreateEvent = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [selectedProfessionals, setSelectedProfessionals] = useState<string[]>([]);
 
   const form = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),
@@ -74,6 +94,10 @@ const CreateEvent = () => {
       max_participants: '',
       price: '',
       image_url: '',
+      contact_email: '',
+      contact_phone: '',
+      application_deadline: '',
+      required_professionals: [],
     },
   });
 
@@ -118,6 +142,10 @@ const CreateEvent = () => {
         max_participants: data.max_participants ? parseInt(data.max_participants) : null,
         price: data.price ? parseFloat(data.price) : 0.00,
         image_url: data.image_url || null,
+        contact_email: data.contact_email || null,
+        contact_phone: data.contact_phone || null,
+        application_deadline: data.application_deadline || null,
+        required_professionals: selectedProfessionals.length > 0 ? selectedProfessionals : null,
         status: 'active'
       };
 
@@ -343,6 +371,81 @@ const CreateEvent = () => {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="contact_email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email para Contato (opcional)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="email"
+                          placeholder="contato@exemplo.com" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="contact_phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Telefone para Contato (opcional)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="tel"
+                          placeholder="+351 912 345 678" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="application_deadline"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Prazo para Candidaturas (opcional)</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Required Professionals Section */}
+                <div className="md:col-span-2">
+                  <FormLabel>Profissionais Necessários (opcional)</FormLabel>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+                    {professionalCategories.map((category) => (
+                      <div key={category} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={category}
+                          checked={selectedProfessionals.includes(category)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedProfessionals([...selectedProfessionals, category]);
+                            } else {
+                              setSelectedProfessionals(selectedProfessionals.filter(p => p !== category));
+                            }
+                          }}
+                        />
+                        <label htmlFor={category} className="text-sm capitalize">
+                          {category}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div className="flex gap-4 pt-6">

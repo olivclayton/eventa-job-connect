@@ -249,20 +249,6 @@ const App = () => (
             />
 
             <Route 
-              path="/reports" 
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout>
-                    <div className="p-6">
-                      <h1 className="text-2xl font-bold">Relatórios</h1>
-                      <p className="text-muted-foreground">Visualize relatórios e análises.</p>
-                    </div>
-                  </DashboardLayout>
-                </ProtectedRoute>
-              } 
-            />
-
-            <Route 
               path="/settings" 
               element={
                 <ProtectedRoute>
